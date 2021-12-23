@@ -12,10 +12,11 @@ settings = json.load(open("settings.json"))
 results_filename = "results/results_"+datetime.now().strftime("%Y%m%d%H%M%S")+".json"
 driver = webdriver.Chrome()
 driver.get("https://www.myrta.com/wps/myportal/extvp/myrta/")
-driver.find_element(By.ID,"widget_cardNumber").send_keys(settings['username'])
-driver.find_element(By.ID,"widget_password").send_keys(settings['password'])
+driver.find_element(By.ID, "widget_input_familyName").send_keys(settings['family_name'])
+driver.find_element(By.ID,"widget_rms_noLogin-input-NSWnumbPCN").send_keys(settings['photo_card_number'])
+driver.find_element(By.ID,"widget_input_cardNoID").send_keys(settings['card_id_number'])
 time.sleep(2)
-driver.find_element(By.ID,"nextButton").click()
+driver.find_element(By.ID,"submitNoLogin").click()
 
 if(settings['have_booking']):
     driver.find_element(By.XPATH,'//*[text()="Manage booking"]').click()
