@@ -6,6 +6,14 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 
+def formatAjaxResult(response):
+    timeslots = []
+    for slot in response['result']['ajaxresult']['slots']['listTimeSlot']:
+        print(slot)
+        # timeslot available
+        if slot.slotNumber != 'null':
+            timeslots.append(slot.startTime)
+    return timeslots
 
 async def retrieveAvailableSlots():
     results = []
@@ -62,9 +70,10 @@ async def retrieveAvailableSlots():
                 if(driver.find_element(By.ID,"getEarliestTime").is_enabled()):
                     driver.find_element(By.ID,"getEarliestTime").click()
 
+        response = json.dumps(driver.execute_script('return timeslots'))
         result = {}
         result['location'] = option
-        result['timeslots'] = json.dumps(driver.execute_script('return timeslots'))
+        result['timeslots'] = formatAjaxResult(response)
         results.push(result)
 
         # Go to next center
