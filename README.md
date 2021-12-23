@@ -1,5 +1,4 @@
-This script scrapes and stores the availability of timeslots for 
-Car Driving Test at all RTA Serivce NSW centres in the state. 
+This script notifies you on discord when the availability of timeslots for the Car Driving Test change. (NSW only) 
 
 ## Dependencies
 
