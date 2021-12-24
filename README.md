@@ -2,9 +2,9 @@ This script notifies you on discord when a new timeslot is available for the NSW
 
 ## Dependencies
 
- 1. Account with RTA NSW where you can have passed knowledge test, hazard test etc.
+ 1. Valid license details with RTA NSW after you have passed knowledge test, hazard test etc.
  2. [chrome driver](https://sites.google.com/chromium.org/driver/) executable in your PATH variable
- 3. Python3 and Selenium installed
+ 3. Python3 with Selenium, Asyncio & Discord.py installed
 
 ## Usage
 
@@ -35,11 +35,13 @@ Run the script (for windows)
 ```
 python3 scrape_availability.py
 ```
-The results should be saved in the results folder.
-You can convert these to csv report by using the second script 
-(requires jq,bash and R with tidyverse)
+After the script is running, you must send a message to your discord bot to determine the correct message channel:
 ```
-./create_status_report result_file.json
+$register
+```
+The process can be gracefully stopped with the following command:
+```
+$stop
 ```
 
 This has been tested to work in my system but there are numerous edge cases 
