@@ -82,7 +82,9 @@ async def getTimeslots():
         results = await retrieveAvailableSlots()
         return results
     except TimeoutException:
-        print("ERROR: Timed out whilst accessing ServiceNSW site. If this continues, try increasing wait_time in settings.json.")
+        print("ERROR: Timed out whilst accessing ServiceNSW site. Try increasing wait_time in settings.json if this continues.")
+    except SessionNotCreatedException:
+        print("ERROR: A new webdriver session couldn't be initialised. Try increasing refresh_time in settings.json if this continues.")
     except NoSuchWindowException:
         print("ERROR: The webdriver process was terminated whilst accessing ServiceNSW.")
     return None
