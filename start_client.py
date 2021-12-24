@@ -91,7 +91,7 @@ async def update():
         await announceTimeslots(results)
 
 def init():
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_event_loop_policy().get_event_loop()
     loop.create_task(update())
     loop.create_task(client.run(settings['token']))
 
