@@ -1,22 +1,21 @@
-This script notifies you on discord when the availability of timeslots for the Car Driving Test change. (NSW only) 
+This script notifies you on discord when a new timeslot is available for the NSW Car Driving Test.
 
 ## Dependencies
 
  1. Account with RTA NSW where you can have passed knowledge test, hazard test etc.
  2. [chrome driver](https://sites.google.com/chromium.org/driver/) executable in your PATH variable
  3. Python3 and Selenium installed
- 4. Optional jq and R for creating reports from results
 
 ## Usage
 
 Clone the repo
 ```
-git clone https://github.com/sbmkvp/rta_booking_information
+git clone https://github.com/firejoust/rta_booking_information_discord
 ```
 
 Set your working directory to the repo
 ```
-cd rta_booking_information
+cd rta_booking_information_discord
 ```
 
 Copy and modify the sample settings file
@@ -24,9 +23,8 @@ Copy and modify the sample settings file
 cp settings_sample.json settings.json
 ```
 
-Change the username, password, if you already have a booking and the specific
-centres you are looking for. If you leave the centres `null` all centres will be
-searched. 
+Firstly, acquire a discord bot token from https://discord.com/developers. Change the license details & family name. if you already have a booking, set the flag to true. If you leave the centres `null` all centres will be
+searched. Wait timer is how long the script will wait for the site to load. Refresh timer is how often (after scraping timeslots) that the script should restart.
 
 Run the script (for bash based systems e.g. mac/linux/WSL)
 ```
