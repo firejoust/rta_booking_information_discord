@@ -7,6 +7,7 @@ from scrape_availability import getTimeslots
 settings = json.load(open('settings.json'))
 centres = json.load(open('centres.json'))
 history = []
+
 # globals
 client = discord.Client()
 channel = None
@@ -37,7 +38,7 @@ async def on_message(message):
         await client.close()
         print('Client "{0.user}" has been deactivated via $stop command.'.format(client))
 
-# filter re-used timeslots
+# filter out re-used timeslots
 def refactorTimeslots(location, timeslots):
     refactored = []
     # determine unique timeslots

@@ -8,6 +8,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support.expected_conditions import *
 
+# globals
+driver = None
+wait = None
+
 def formatAjaxResult(response):
     timeslots = []
     
@@ -17,6 +21,8 @@ def formatAjaxResult(response):
     return timeslots
 
 async def retrieveAvailableSlots():
+    global driver
+    global wait
     results = []
     settings = json.load(open("settings.json"))
     # assign headless driver for site navigation
@@ -67,13 +73,15 @@ async def retrieveAvailableSlots():
         options = [x.get_attribute("value") for x in options]
 
     # Retrieve all available timeslots for each center
-    print('Retrieving timeslots for allocated centres.')
+    print('Retrieving timeslots for allocated centres...')
     for option in options[1:]:
         print(f"Scraping timeslots for centre ID {option}...")
+
         # select centre location in dropdown
         wait.until(element_to_be_clickable((By.ID, "rms_batLocLocSel"))).click()
         select_box = wait.until(element_to_be_clickable((By.ID, "rms_batLocationSelect2")))
         Select(select_box).select_by_value(option)
+
         # goto booking page to find timeslots
         await asyncio.sleep(2)
         wait.until(element_to_be_clickable((By.ID, "nextButton"))).click()
@@ -82,22 +90,24 @@ async def retrieveAvailableSlots():
         result['location'] = option
         result['timeslots'] = formatAjaxResult(response)
         results.append(result)
+
         # Go to next centre
         wait.until(element_to_be_clickable((By.ID, "anotherLocationLink"))).click()
 
-    driver.quit()
+    print(f"Finished retrieving timeslots for {len(results)} locations.")
     return results
 
 async def getTimeslots():
+    results = None
     try:
         results = await retrieveAvailableSlots()
-        return results
+        driver.delete_all_cookies()
     except TimeoutException:
         print("ERROR: Timed out whilst accessing ServiceNSW site. Try increasing wait_time in settings.json if this continues.")
     except SessionNotCreatedException:
         print("ERROR: A new webdriver session couldn't be initialised. Try increasing refresh_time in settings.json if this continues.")
     except NoSuchWindowException:
         print("ERROR: The webdriver process was terminated whilst accessing ServiceNSW.")
-    return None
-
-
+    driver.close()
+    driver.quit()
+    return results
