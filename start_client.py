@@ -1,6 +1,7 @@
 import json
 import discord
 import asyncio
+from selenium import webdriver
 from scrape_availability import getTimeslots
 
 # configuration
@@ -10,6 +11,7 @@ history = []
 
 # globals
 client = discord.Client()
+driver = None
 channel = None
 active = True
 
@@ -85,13 +87,20 @@ async def update():
         # verify discord channel is registered
         if channel is None:
             continue
-        results = await getTimeslots()
+        results = await getTimeslots(driver)
         # check that no issues were encountered whilst retrieving timeslots
         if results is None:
             continue
         await announceTimeslots(results)
 
 def init():
+    global driver
+    # assign headless driver for site navigation
+    options = webdriver.ChromeOptions()
+    options.headless = True
+    # create the driver with timeout management
+    driver = webdriver.Chrome(options=options)
+    # assign concurrent loops to simultaneously send messages / scrape data
     loop = asyncio.get_event_loop_policy().get_event_loop()
     loop.create_task(update())
     loop.create_task(client.run(settings['token']))

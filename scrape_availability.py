@@ -2,16 +2,12 @@ import sys
 import asyncio
 import json
 from datetime import datetime
-from selenium import webdriver
-from urllib3.exceptions import NewConnectionError, MaxRetryError
+from urllib3.exceptions import HTTPError
+# selenium webdriver
 from selenium.common.exceptions import TimeoutException, SessionNotCreatedException, NoSuchWindowException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support.expected_conditions import *
-
-# globals
-driver = None
-wait = None
 
 def formatAjaxResult(response):
     timeslots = []
@@ -21,16 +17,9 @@ def formatAjaxResult(response):
             timeslots.append(slot['startTime'])
     return timeslots
 
-async def retrieveAvailableSlots():
-    global driver
-    global wait
+async def retrieveAvailableSlots(driver):
     results = []
     settings = json.load(open("settings.json"))
-    # assign headless driver for site navigation
-    options = webdriver.ChromeOptions()
-    options.headless = True
-    # create the driver with timeout management
-    driver = webdriver.Chrome(chrome_options=options)
     wait = WebDriverWait(driver, settings['wait_timer'])
 
     # Attempt login with license credentials
@@ -98,12 +87,11 @@ async def retrieveAvailableSlots():
     print(f"Finished retrieving timeslots for {len(results)} locations.")
     return results
 
-async def getTimeslots():
+async def getTimeslots(driver):
     results = None
     try:
-        results = await retrieveAvailableSlots()
-        driver.delete_all_cookies()
-    except NewConnectionError or MaxRetryError:
+        results = await retrieveAvailableSlots(driver)
+    except HTTPError:
         print("ERROR: Could not connect to the ServiceNSW site. Your internet or the site may be down.")
     except TimeoutException:
         print("ERROR: Timed out whilst accessing ServiceNSW site. Try increasing wait_time in settings.json if this continues.")
@@ -111,6 +99,5 @@ async def getTimeslots():
         print("ERROR: A new webdriver session couldn't be initialised. Try increasing refresh_time in settings.json if this continues.")
     except NoSuchWindowException:
         print("ERROR: The webdriver process was terminated whilst accessing ServiceNSW.")
-    driver.close()
-    driver.quit()
+    driver.delete_all_cookies()
     return results
