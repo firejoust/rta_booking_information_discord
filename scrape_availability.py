@@ -3,6 +3,7 @@ import asyncio
 import json
 from datetime import datetime
 from selenium import webdriver
+from urllib3.exceptions import NewConnectionError, MaxRetryError
 from selenium.common.exceptions import TimeoutException, SessionNotCreatedException, NoSuchWindowException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select, WebDriverWait
@@ -102,6 +103,8 @@ async def getTimeslots():
     try:
         results = await retrieveAvailableSlots()
         driver.delete_all_cookies()
+    except NewConnectionError or MaxRetryError:
+        print("ERROR: Could not connect to the ServiceNSW site. Your internet or the site may be down.")
     except TimeoutException:
         print("ERROR: Timed out whilst accessing ServiceNSW site. Try increasing wait_time in settings.json if this continues.")
     except SessionNotCreatedException:
